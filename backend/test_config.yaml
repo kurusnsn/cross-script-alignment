@@ -1,0 +1,119 @@
+# Test Configuration for Transliteration Backend
+# This file defines test settings and environment configurations
+
+# Environment settings
+environment:
+  development:
+    api_base_url: "http://localhost:8000"
+    frontend_url: "http://localhost:3000"
+    timeout: 30000
+    retry_attempts: 2
+
+  staging:
+    api_base_url: "https://staging-api.example.com"
+    frontend_url: "https://staging.example.com"
+    timeout: 45000
+    retry_attempts: 3
+
+  production:
+    api_base_url: "https://api.example.com"
+    frontend_url: "https://app.example.com"
+    timeout: 60000
+    retry_attempts: 1
+
+# Test data sets
+test_data:
+  persian_sentences:
+    - source: "سلام"
+      target: "Hello"
+      type: "simple"
+      expected_confidence: 0.9
+
+    - source: "بستنی خریدیم"
+      target: "We bought ice cream"
+      type: "compound_verb"
+      expected_confidence: 0.85
+
+    - source: "دیروز با خانواده‌ام به پارک رفتیم."
+      target: "Yesterday we went to the park with my family."
+      type: "complex_sentence"
+      expected_confidence: 0.8
+
+    - source: "هوا آفتابی و بسیار دلپذیر بود."
+      target: "The weather was sunny and very pleasant."
+      type: "descriptive"
+      expected_confidence: 0.8
+
+  multilingual_tests:
+    - source: "Bonjour"
+      target: "Hello"
+      language: "French"
+
+    - source: "Hola mundo"
+      target: "Hello world"
+      language: "Spanish"
+
+    - source: "Guten Tag"
+      target: "Good day"
+      language: "German"
+
+    - source: "こんにちは"
+      target: "Hello"
+      language: "Japanese"
+
+# Performance benchmarks
+performance:
+  alignment_api:
+    max_response_time_ms: 10000
+    max_concurrent_requests: 10
+    memory_limit_mb: 512
+
+  llm_service:
+    max_response_time_ms: 15000
+    max_tokens_per_request: 1000
+    rate_limit_per_minute: 60
+
+# Test markers and categories
+test_categories:
+  unit:
+    description: "Fast tests with no external dependencies"
+    timeout: 5
+    markers: ["unit"]
+
+  integration:
+    description: "Tests that interact with real services"
+    timeout: 30
+    markers: ["integration"]
+    requires_env: ["OPENAI_API_KEY"]
+
+  llm:
+    description: "Tests requiring LLM API calls"
+    timeout: 60
+    markers: ["llm"]
+    requires_env: ["OPENAI_API_KEY"]
+
+  slow:
+    description: "Long-running tests"
+    timeout: 120
+    markers: ["slow"]
+
+  e2e:
+    description: "End-to-end browser tests"
+    timeout: 60
+    markers: ["e2e"]
+    requires_services: ["frontend", "backend"]
+
+# CI/CD settings
+ci_settings:
+  parallel_workers: 4
+  retry_failed_tests: true
+  generate_coverage: true
+  coverage_threshold: 80
+  report_formats: ["html", "xml", "json"]
+
+# Quality gates
+quality_gates:
+  min_test_coverage: 80
+  max_test_duration_minutes: 30
+  max_flaky_test_percentage: 5
+  required_test_types: ["unit", "integration", "e2e"]

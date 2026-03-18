@@ -1,0 +1,43 @@
+groups:
+  - name: alignai.logs
+    interval: 1m
+    rules:
+      - alert: HighLogErrorRate
+        expr: sum(rate({compose_service=~".+"} |= "ERROR" [5m])) > 0.5
+        for: 2m
+        labels:
+          severity: critical
+          service: backend
+        annotations:
+          summary: "High error log rate"
+          description: "More than 0.5 ERROR log lines/sec across services."
+
+      - alert: ExceptionSpike
+        expr: sum(rate({compose_service=~".+"} |~ "Exception|Traceback" [5m])) > 0.2
+        for: 2m
+        labels:
+          severity: critical
+          service: backend
+        annotations:
+          summary: "Exception spike in logs"
+          description: "Unusual number of exceptions detected in container logs."
+
+      - alert: DatabaseConnectionError
+        expr: sum(rate({compose_service="api"} |~ "could not connect|OperationalError|connection refused" [5m])) > 0.1
+        for: 1m
+        labels:
+          severity: critical
+          service: api
+        annotations:
+          summary: "Database connection errors"
+          description: "Repeated DB connection failures in API logs."
+
+      - alert: RedisConnectionError
+        expr: sum(rate({compose_service="api"} |~ "redis.*[Ee]rror|ConnectionError" [5m])) > 0.1
+        for: 1m
+        labels:
+          severity: warning
+          service: api
+        annotations:
+          summary: "Redis connection errors"
+          description: "Redis connectivity issues in API logs."

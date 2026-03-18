@@ -1,0 +1,113 @@
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
+
+# Build Gateway (FastAPI backend)
+build-gateway:
+  stage: build
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  tags:
+    - hetzner
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/gateway:$CI_COMMIT_SHA -t $CI_REGISTRY_IMAGE/gateway:latest ./backend
+    - docker push $CI_REGISTRY_IMAGE/gateway:$CI_COMMIT_SHA
+    - docker push $CI_REGISTRY_IMAGE/gateway:latest
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /^(main|staging|dev)$/
+
+# Build UI (Next.js frontend)
+build-ui:
+  stage: build
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  tags:
+    - hetzner
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/ui:$CI_COMMIT_SHA -t $CI_REGISTRY_IMAGE/ui:latest .
+    - docker push $CI_REGISTRY_IMAGE/ui:$CI_COMMIT_SHA
+    - docker push $CI_REGISTRY_IMAGE/ui:latest
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /^(main|staging|dev)$/
+
+# Build NLP Service (Stanza + aligneration)
+build-nlp:
+  stage: build
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  tags:
+    - hetzner
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/nlp:$CI_COMMIT_SHA -t $CI_REGISTRY_IMAGE/nlp:latest ./alignment-service
+    - docker push $CI_REGISTRY_IMAGE/nlp:$CI_COMMIT_SHA
+    - docker push $CI_REGISTRY_IMAGE/nlp:latest
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /^(main|staging|dev)$/
+
+# Build TTS Service
+build-tts:
+  stage: build
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  tags:
+    - hetzner
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/tts:$CI_COMMIT_SHA -t $CI_REGISTRY_IMAGE/tts:latest ./backend/tts-service
+    - docker push $CI_REGISTRY_IMAGE/tts:$CI_COMMIT_SHA
+    - docker push $CI_REGISTRY_IMAGE/tts:latest
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /^(main|staging|dev)$/
+
+# Performance Smoke Tests
+perf-smoke-test:
+  stage: test
+  image: python:3.11-slim
+  tags:
+    - hetzner
+  before_script:
+    - pip install httpx numpy
+  script:
+    # Start the backend in the background for local benchmarking if no staging URL is provided
+    - cd backend && pip install -r requirements.txt && uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+    - export PERF_TARGET_URL="http://localhost:8000"
+    - sleep 10 # Wait for backend to start
+    - cd .. && python perf/run_smoke_tests.py
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH =~ /^(main|staging|dev)$/
+
+# Deploy to Kubernetes
+deploy-k8s:
+  stage: deploy
+  image: bitnami/kubectl:1.29
+  tags:
+    - hetzner
+  script:
+    - kubectl set image deployment/gateway gateway=$CI_REGISTRY_IMAGE/gateway:$CI_COMMIT_SHA -n align
+    - kubectl set image deployment/ui ui=$CI_REGISTRY_IMAGE/ui:$CI_COMMIT_SHA -n align
+    - kubectl set image deployment/alignment-service alignment-service=$CI_REGISTRY_IMAGE/nlp:$CI_COMMIT_SHA -n align
+    - kubectl set image deployment/tts-service tts-service=$CI_REGISTRY_IMAGE/tts:$CI_COMMIT_SHA -n align
+    - kubectl rollout status deployment -n align --timeout=5m
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: manual
+  environment:
+    name: production
+    url: https://alignai.com

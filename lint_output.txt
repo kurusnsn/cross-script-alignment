@@ -1,0 +1,329 @@
+
+> align@0.1.0 lint
+> eslint
+
+
+/Users/kurus/Documents/CrossScriptAlignment/backend/app/components/TransliterationDemo.tsx
+  157:59  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/kurus/Documents/CrossScriptAlignment/backend/app/components/TransliterationInput.tsx
+  281:9  error  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  281:9  error  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+/Users/kurus/Documents/CrossScriptAlignment/backend/app/components/VanishInput.tsx
+  211:9  warning  'selectedSource' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  212:9  warning  'selectedTarget' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/kurus/Documents/CrossScriptAlignment/backend/tests/e2e/alignment.spec.ts
+    4:7   warning  'TEST_CASES' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  246:11  warning  'refinedBadge' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/kurus/Documents/CrossScriptAlignment/src/app/api/progress/achievements/route.ts
+  75:11  warning  'correctAnswers' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/kurus/Documents/CrossScriptAlignment/src/app/api/progress/stats/route.ts
+   74:73  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   75:55  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  122:51  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  146:50  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kurus/Documents/CrossScriptAlignment/src/app/api/quiz/answer/route.ts
+  14:31  warning  'selected_option' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/kurus/Documents/CrossScriptAlignment/src/app/api/quiz/next/route.ts
+  1:2  error  Parsing error: Module declaration names may only use ' or " quoted strings
+
+/Users/kurus/Documents/CrossScriptAlignment/src/app/api/translations/store/route.ts
+  2:28  warning  'WordBreakdown' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kurus/Documents/CrossScriptAlignment/src/app/api/tts/route.ts
+  47:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  75:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kurus/Documents/CrossScriptAlignment/src/app/dashboard/history/page.tsx
+  37:5   warning  'isCreatingFolder' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  38:5   warning  'isUpdatingFolder' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  39:5   warning  'isDeletingFolder' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  40:5   warning  'isMovingTranslation' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  41:5   warning  'isDeletingTranslation' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  48:21  warning  'copied' is assigned a value but never used                 @typescript-eslint/no-unused-vars
+
+/Users/kurus/Documents/CrossScriptAlignment/src/app/dashboard/layout.tsx
+   5:3   warning  'Breadcrumb' is defined but never used                    @typescript-eslint/no-unused-vars
+   6:3   warning  'BreadcrumbItem' is defined but never used                @typescript-eslint/no-unused-vars
+   7:3   warning  'BreadcrumbLink' is defined but never used                @typescript-eslint/no-unused-vars
+   8:3   warning  'BreadcrumbList' is defined but never used                @typescript-eslint/no-unused-vars
+   9:3   warning  'BreadcrumbPage' is defined but never used                @typescript-eslint/no-unused-vars
+  10:3   warning  'BreadcrumbSeparator' is defined but never used           @typescript-eslint/no-unused-vars
+  12:10  warning  'Separator' is defined but never used                     @typescript-eslint/no-unused-vars
+  16:3   warning  'SidebarTrigger' is defined but never used                @typescript-eslint/no-unused-vars
+  22:20  warning  'selectedHistoryId' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  26:9   warning  'getPageTitle' is assigned a value but never used         @typescript-eslint/no-unused-vars
+  35:9   warning  'sidebarHistory' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  43:9   warning  'handleSelectHistory' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  43:38  warning  Unexpected any. Specify a different type                  @typescript-eslint/no-explicit-any
+  47:9   warning  'handleUpdateHistory' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  47:39  warning  Unexpected any. Specify a different type                  @typescript-eslint/no-explicit-any
+
+/Users/kurus/Documents/CrossScriptAlignment/src/app/dashboard/progress/page.tsx
+  10:23  warning  'ProgressStats' is defined but never used  @typescript-eslint/no-unused-vars
+  10:38  warning  'Achievement' is defined but never used    @typescript-eslint/no-unused-vars
+
+/Users/kurus/Documents/CrossScriptAlignment/src/app/dashboard/quiz/page.tsx
+   74:9   warning  'userId' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   90:58  warning  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  337:47  warning  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  398:41  warning  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+
+/Users/kurus/Documents/CrossScriptAlignment/src/app/dashboard/settings/page.tsx
+  14:3  warning  'Mic' is defined but never used   @typescript-eslint/no-unused-vars
+  19:3  warning  'Type' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kurus/Documents/CrossScriptAlignment/src/app/dashboard/aligneration/page.tsx
+    4:47   warning  'Eye' is defined but never used                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+    4:52   warning  'Languages' is defined but never used                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+    4:63   warning  'Moon' is defined but never used                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+    4:69   warning  'Sun' is defined but never used                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+    4:74   warning  'SlidersHorizontal' is defined but never used                                                                                                                                                                               @typescript-eslint/no-unused-vars
+    4:93   warning  'Type' is defined but never used                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+    4:135  warning  'ImageIcon' is defined but never used                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+    7:10   warning  'Card' is defined but never used                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+    7:16   warning  'CardContent' is defined but never used                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+    7:29   warning  'CardDescription' is defined but never used                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+    7:46   warning  'CardHeader' is defined but never used                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+    7:58   warning  'CardTitle' is defined but never used                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+    8:10   warning  'Input' is defined but never used                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   10:10   warning  'Tabs' is defined but never used                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+   10:16   warning  'TabsContent' is defined but never used                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+   10:29   warning  'TabsList' is defined but never used                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   10:39   warning  'TabsTrigger' is defined but never used                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+   11:10   warning  'Badge' is defined but never used                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   12:10   warning  'Textarea' is defined but never used                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   16:10   warning  'VanishInput' is defined but never used                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+   18:8    warning  'FileUploadZone' is defined but never used                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+   23:10   warning  'TokenAnnotation' is defined but never used                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   45:7    warning  'VANISH_PLACEHOLDERS' is assigned a value but never used                                                                                                                                                                    @typescript-eslint/no-unused-vars
+   83:17   warning  Unexpected any. Specify a different type                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+  138:16   warning  Unexpected any. Specify a different type                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+  142:44   warning  'selectedHistoryId' is assigned a value but never used                                                                                                                                                                      @typescript-eslint/no-unused-vars
+  142:63   warning  'history' is assigned a value but never used                                                                                                                                                                                @typescript-eslint/no-unused-vars
+  142:72   warning  'folders' is assigned a value but never used                                                                                                                                                                                @typescript-eslint/no-unused-vars
+  142:81   warning  'searchQuery' is assigned a value but never used                                                                                                                                                                            @typescript-eslint/no-unused-vars
+  142:94   warning  'setSearchQuery' is assigned a value but never used                                                                                                                                                                         @typescript-eslint/no-unused-vars
+  142:110  warning  'selectedFolderId' is assigned a value but never used                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  142:128  warning  'setSelectedFolderId' is assigned a value but never used                                                                                                                                                                    @typescript-eslint/no-unused-vars
+  148:10   warning  'error' is assigned a value but never used                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+  151:22   warning  'setIsDarkMode' is assigned a value but never used                                                                                                                                                                          @typescript-eslint/no-unused-vars
+  152:26   warning  'setFontPreference' is assigned a value but never used                                                                                                                                                                      @typescript-eslint/no-unused-vars
+  153:25   warning  'setLetterSpacing' is assigned a value but never used                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  190:9    warning  'recentHistory' is assigned a value but never used                                                                                                                                                                          @typescript-eslint/no-unused-vars
+  191:9    warning  'mostRecent' is assigned a value but never used                                                                                                                                                                             @typescript-eslint/no-unused-vars
+  216:38   warning  Unexpected any. Specify a different type                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+  220:6    warning  React Hook useEffect has a missing dependency: 'results'. Either include it or remove the dependency array. You can also do a functional update 'setResults(r => ...)' if you only need 'results' in the 'setResults' call  react-hooks/exhaustive-deps
+  288:65   warning  Unexpected any. Specify a different type                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+  298:68   warning  Unexpected any. Specify a different type                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+  321:56   warning  Unexpected any. Specify a different type                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+
+/Users/kurus/Documents/CrossScriptAlignment/src/app/dashboard/voice-chat/page.tsx
+  7:34  warning  'AvatarImage' is defined but never used  @typescript-eslint/no-unused-vars
+  8:48  warning  'Pause' is defined but never used        @typescript-eslint/no-unused-vars
+
+/Users/kurus/Documents/CrossScriptAlignment/src/app/dashboard/words/page.tsx
+    9:10  warning  'UserWord' is defined but never used            @typescript-eslint/no-unused-vars
+   18:50  warning  'isAdding' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  236:15  error    A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  248:15  error    A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  260:15  error    A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  272:15  error    A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  284:15  error    A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+/Users/kurus/Documents/CrossScriptAlignment/src/app/layout.tsx
+  35:9  warning  Custom fonts not added in `pages/_document.js` will only load for a single page. This is discouraged. See: https://nextjs.org/docs/messages/no-page-custom-font  @next/next/no-page-custom-font
+
+/Users/kurus/Documents/CrossScriptAlignment/src/app/test-alignment/page.tsx
+  497:32  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  497:42  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  497:45  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  497:57  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  497:60  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  497:75  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  506:40  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  506:51  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  506:54  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  506:68  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  551:35  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  551:49  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+/Users/kurus/Documents/CrossScriptAlignment/src/components/AlignmentViewer.tsx
+    3:28  warning  'useEffect' is defined but never used                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   53:3   warning  'showDualLevel' is assigned a value but never used                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+   56:9   warning  The 'safeOriginal' conditional could make the dependencies of useMemo Hook (at line 314) change on every render. Move it inside the useMemo callback. Alternatively, wrap the initialization of 'safeOriginal' in its own useMemo() Hook        react-hooks/exhaustive-deps
+   58:9   warning  The 'safeTranslation' conditional could make the dependencies of useMemo Hook (at line 319) change on every render. Move it inside the useMemo callback. Alternatively, wrap the initialization of 'safeTranslation' in its own useMemo() Hook  react-hooks/exhaustive-deps
+   61:9   warning  'safeWordAlignments' is assigned a value but never used                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   65:10  warning  'showLevel' is assigned a value but never used                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+   65:21  warning  'setShowLevel' is assigned a value but never used                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+   77:9   warning  'getIpaForWord' is assigned a value but never used                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+  202:9   warning  'phraseSpanCache' is assigned a value but never used                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+  203:35  warning  Unexpected any. Specify a different type                                                                                                                                                                                                        @typescript-eslint/no-explicit-any
+  217:9   warning  'tokenPhraseInfoCache' is assigned a value but never used                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  218:34  warning  Unexpected any. Specify a different type                                                                                                                                                                                                        @typescript-eslint/no-explicit-any
+  225:80  warning  Unexpected any. Specify a different type                                                                                                                                                                                                        @typescript-eslint/no-explicit-any
+  230:6   warning  React Hook useMemo has an unnecessary dependency: 'phraseAlignments'. Either exclude it or remove the dependency array                                                                                                                          react-hooks/exhaustive-deps
+  244:9   warning  'getPhrasePosition' is assigned a value but never used                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+  301:9   warning  'findMappingGroupsForPhrase' is assigned a value but never used                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+  409:5   warning  'color' is defined but never used                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+  427:57  warning  Unexpected any. Specify a different type                                                                                                                                                                                                        @typescript-eslint/no-explicit-any
+  472:15  error    Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element                                               jsx-a11y/no-static-element-interactions
+
+/Users/kurus/Documents/CrossScriptAlignment/src/components/AuthModal.tsx
+  21:43  warning  'token' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  63:14  warning  'err' is defined but never used             @typescript-eslint/no-unused-vars
+
+/Users/kurus/Documents/CrossScriptAlignment/src/components/FileUploadZone.tsx
+  89:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kurus/Documents/CrossScriptAlignment/src/components/HeroDemo.tsx
+  161:5   error  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  277:5   error  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  298:11  error  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  298:11  error  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+/Users/kurus/Documents/CrossScriptAlignment/src/components/HistoryList.tsx
+  3:10  warning  'useState' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kurus/Documents/CrossScriptAlignment/src/components/HistorySearchBar.tsx
+   11:11  warning  'SearchSuggestion' is defined but never used                                                                                                                                                       @typescript-eslint/no-unused-vars
+  182:19  error    Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  182:19  error    Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+/Users/kurus/Documents/CrossScriptAlignment/src/components/HistorySearchModal.tsx
+   7:10  warning  'Button' is defined but never used                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   8:10  warning  'Label' is defined but never used                                                                                                                                                                  @typescript-eslint/no-unused-vars
+  11:10  warning  'cn' is defined but never used                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  74:19  error    Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  74:19  error    Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+/Users/kurus/Documents/CrossScriptAlignment/src/components/HistoryTree.tsx
+   66:7   error  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+   66:7   error  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+   69:11  error  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+   69:11  error  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  209:11  error  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  209:11  error  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+/Users/kurus/Documents/CrossScriptAlignment/src/components/LLMAlignmentViewer.tsx
+  143:15  error  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  149:17  error  onMouseOver must be accompanied by onFocus for accessibility                                                                                                                                       jsx-a11y/mouse-events-have-key-events
+  156:17  error  onMouseOut must be accompanied by onBlur for accessibility                                                                                                                                         jsx-a11y/mouse-events-have-key-events
+  162:15  error  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  167:17  error  onMouseOver must be accompanied by onFocus for accessibility                                                                                                                                       jsx-a11y/mouse-events-have-key-events
+  174:17  error  onMouseOut must be accompanied by onBlur for accessibility                                                                                                                                         jsx-a11y/mouse-events-have-key-events
+  202:17  error  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+/Users/kurus/Documents/CrossScriptAlignment/src/components/PlayTTS.tsx
+  82:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  90:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kurus/Documents/CrossScriptAlignment/src/components/TokenTooltip.tsx
+  33:59  warning  'onClose' is defined but never used                                                                                                                                                                @typescript-eslint/no-unused-vars
+  82:5   error    Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  82:5   error    Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  95:17  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                    react/no-unescaped-entities
+  95:32  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                    react/no-unescaped-entities
+
+/Users/kurus/Documents/CrossScriptAlignment/src/components/TokenizedText.tsx
+  138:13  error  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  138:13  error  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+
+/Users/kurus/Documents/CrossScriptAlignment/src/components/app-sidebar.tsx
+   13:3   warning  'MoreVertical' is defined but never used                          @typescript-eslint/no-unused-vars
+   14:3   warning  'ChevronRight' is defined but never used                          @typescript-eslint/no-unused-vars
+   17:3   warning  'Clock' is defined but never used                                 @typescript-eslint/no-unused-vars
+   40:10  warning  'Button' is defined but never used                                @typescript-eslint/no-unused-vars
+   42:3   warning  'DropdownMenu' is defined but never used                          @typescript-eslint/no-unused-vars
+   43:3   warning  'DropdownMenuContent' is defined but never used                   @typescript-eslint/no-unused-vars
+   44:3   warning  'DropdownMenuItem' is defined but never used                      @typescript-eslint/no-unused-vars
+   45:3   warning  'DropdownMenuTrigger' is defined but never used                   @typescript-eslint/no-unused-vars
+   47:10  warning  'ScrollArea' is defined but never used                            @typescript-eslint/no-unused-vars
+   48:10  warning  'Label' is defined but never used                                 @typescript-eslint/no-unused-vars
+   87:11  error    An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+   94:5   warning  'history' is assigned a value but never used                      @typescript-eslint/no-unused-vars
+   96:5   warning  'selectedHistoryId' is assigned a value but never used            @typescript-eslint/no-unused-vars
+   97:5   warning  'selectHistoryItem' is assigned a value but never used            @typescript-eslint/no-unused-vars
+  129:9   warning  'handleDragStart' is assigned a value but never used              @typescript-eslint/no-unused-vars
+
+/Users/kurus/Documents/CrossScriptAlignment/src/components/ui/alert.tsx
+  39:3  error  Headings must have content and the content must be accessible by a screen reader  jsx-a11y/heading-has-content
+
+/Users/kurus/Documents/CrossScriptAlignment/src/contexts/HistoryContext.tsx
+   13:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   14:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   15:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   16:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   17:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   18:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   31:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   72:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  111:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kurus/Documents/CrossScriptAlignment/src/hooks/useTtsPlayer.ts
+  75:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kurus/Documents/CrossScriptAlignment/src/lib/database.ts
+  24:33  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  24:61  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  36:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  36:64  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kurus/Documents/CrossScriptAlignment/src/lib/quizHandlers.ts
+  12:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  27:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  65:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kurus/Documents/CrossScriptAlignment/src/lib/storage.ts
+  84:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kurus/Documents/CrossScriptAlignment/src/lib/translationHandlers.ts
+   3:3   warning  'queryOne' is defined but never used      @typescript-eslint/no-unused-vars
+  86:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/kurus/Documents/CrossScriptAlignment/tests/e2e/alignment.spec.ts
+    4:7   warning  'TEST_CASES' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  246:11  warning  'refinedBadge' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/kurus/Documents/CrossScriptAlignment/tests/e2e/api-alignment.spec.ts
+  9:7  warning  'TEST_CASES' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/kurus/Documents/CrossScriptAlignment/tests/e2e/file-upload.spec.ts
+   96:74  warning  'page' is defined but never used  @typescript-eslint/no-unused-vars
+  107:85  warning  'page' is defined but never used  @typescript-eslint/no-unused-vars
+  147:64  warning  'page' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/kurus/Documents/CrossScriptAlignment/tests/e2e/full-pipeline.spec.ts
+  172:9   error    'authToken' is never reassigned. Use 'const' instead  prefer-const
+  173:9   warning  'testHistoryId' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  175:29  warning  'request' is defined but never used                   @typescript-eslint/no-unused-vars
+  255:9   error    'authToken' is never reassigned. Use 'const' instead  prefer-const
+
+/Users/kurus/Documents/CrossScriptAlignment/tests/e2e/quiz-system.spec.ts
+  152:15  warning  'initialQuestion' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/kurus/Documents/CrossScriptAlignment/tests/e2e/quiz-tts.spec.ts
+  70:13  warning  'audioPromise' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/kurus/Documents/CrossScriptAlignment/tests/e2e/sidebar-history-search.spec.ts
+   90:11  warning  'hasAlignment' is assigned a value but never used        @typescript-eslint/no-unused-vars
+  137:11  warning  'nonMatchingVisible' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  152:11  warning  'hasNoResults' is assigned a value but never used        @typescript-eslint/no-unused-vars
+
+/Users/kurus/Documents/CrossScriptAlignment/tests/e2e/user-flow.spec.ts
+    1:24  warning  'Page' is defined but never used                      @typescript-eslint/no-unused-vars
+    1:30  warning  'APIRequestContext' is defined but never used         @typescript-eslint/no-unused-vars
+  102:11  warning  Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  133:7   error    'authToken' is never reassigned. Use 'const' instead  prefer-const
+  134:7   warning  'testHistoryId' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  199:7   error    'authToken' is never reassigned. Use 'const' instead  prefer-const
+
+✖ 225 problems (55 errors, 170 warnings)
+  4 errors and 0 warnings potentially fixable with the `--fix` option.
+

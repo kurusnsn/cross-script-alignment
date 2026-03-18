@@ -1,0 +1,85 @@
+/* Enhanced Vanish Input Styling */
+
+.vanish-input-container {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.vanish-input-container.focused {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04);
+}
+
+/* Custom scrollbar for the textarea */
+.vanish-input-textarea::-webkit-scrollbar {
+  width: 4px;
+}
+
+.vanish-input-textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.vanish-input-textarea::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+}
+
+.vanish-input-textarea::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode scrollbar */
+.dark .vanish-input-textarea::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dark .vanish-input-textarea::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Smooth transitions for all interactive elements */
+.vanish-input-textarea {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Animation for placeholder text */
+.vanish-placeholder {
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.05) 50%,
+    transparent 100%
+  );
+  background-size: 200% 200%;
+  animation: subtle-shimmer 8s ease-in-out infinite;
+}
+
+@keyframes subtle-shimmer {
+  0%, 100% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+}
+
+.dark .vanish-placeholder {
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.02) 50%,
+    transparent 100%
+  );
+  background-size: 200% 200%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .vanish-input-container {
+    margin: 0 -1rem;
+  }
+
+  .vanish-input-textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}

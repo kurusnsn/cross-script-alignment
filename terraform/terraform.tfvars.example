@@ -1,0 +1,44 @@
+# Terraform variable values
+# Copy this file to terraform.tfvars and fill in your values
+
+# ============================================
+# REQUIRED: Hetzner Cloud API Token
+# ============================================
+# Get from: https://console.hetzner.cloud/ → Security → API Tokens
+# Permissions: Read & Write
+hcloud_token = "your-hetzner-api-token-here"
+
+# ============================================
+# REQUIRED: Gateway IP for Firewall
+# ============================================
+# For development, use "0.0.0.0/0" to allow all IPs
+# For production, use your Gateway's specific IP, e.g., "1.2.3.4/32"
+# Find your IP: curl ifconfig.me
+gateway_ip = "0.0.0.0/0"
+
+# ============================================
+# SSH Keys (Ed25519 - Recommended)
+# ============================================
+# Using your Mac's Ed25519 keys (more secure than RSA)
+ssh_public_key_path  = "~/.ssh/id_ed25519.pub"
+ssh_private_key_path = "~/.ssh/id_ed25519"
+
+# If you prefer to use RSA keys instead, uncomment:
+# ssh_public_key_path  = "~/.ssh/id_rsa.pub"
+# ssh_private_key_path = "~/.ssh/id_rsa"
+
+# ============================================
+# OPTIONAL: Server Configuration
+# ============================================
+# Uncomment to customize (defaults are fine)
+
+# Server type (default: cpx41 - 8 vCPU, 16GB RAM, ~€16.90/month)
+# Options: cpx21 (4 vCPU, 8GB, ~€8.90), cpx41, cpx51 (16 vCPU, 32GB, ~€32.90)
+# server_type = "cpx41"
+
+# Location (default: nbg1 - Nuremberg, Germany)
+# Options: nbg1, fsn1 (Falkenstein), hel1 (Helsinki)
+# location = "nbg1"
+
+# Server name (default: align-worker)
+# server_name = "align-worker"

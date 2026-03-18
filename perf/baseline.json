@@ -1,0 +1,39 @@
+{
+  "metadata": {
+    "generated_at": "2026-02-04T17:40:00Z",
+    "target_url": "http://staging.alignai.com",
+    "concurrency": 5,
+    "requests_per_endpoint": 50,
+    "note": "PLACEHOLDER BASELINE - To be regenerated in staging"
+  },
+  "endpoints": {
+    "health_check": {
+      "p50_ms": 10.0,
+      "p95_ms": 25.0,
+      "p99_ms": 50.0,
+      "error_rate": 0.0,
+      "sample_count": 50
+    },
+    "alignerate_basic": {
+      "p50_ms": 500.0,
+      "p95_ms": 1200.0,
+      "p99_ms": 1500.0,
+      "error_rate": 0.0,
+      "sample_count": 50
+    },
+    "phrase_align": {
+      "p50_ms": 1500.0,
+      "p95_ms": 3000.0,
+      "p99_ms": 4500.0,
+      "error_rate": 0.0,
+      "sample_count": 50
+    },
+    "auth_login_fail": {
+      "p50_ms": 100.0,
+      "p95_ms": 250.0,
+      "p99_ms": 400.0,
+      "error_rate": 0.0,
+      "sample_count": 50
+    }
+  }
+}

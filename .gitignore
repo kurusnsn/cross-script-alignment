@@ -1,0 +1,46 @@
+# dependencies
+node_modules/
+.pnp.*
+.yarn/*
+
+# testing
+coverage
+
+# next.js build output
+.next/
+out/
+
+# production build
+build
+
+# misc
+.DS_Store
+*.pem
+
+# Markdown documentation files
+
+# debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# env files
+.env*
+.vercel
+
+# typescript build info
+*.tsbuildinfo
+
+# personal files
+.mcp.json
+.claude/
+.tts_service/backend/venv/
+__pycache__/
+*.pyc
+.env
+
+# Monitoring secrets (apply manually with kubectl)
+k8s/base/monitoring/alertmanager-secret.yaml
+k8s/base/monitoring/grafana-admin-secret.yaml
+certs/

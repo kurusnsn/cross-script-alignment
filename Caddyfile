@@ -1,0 +1,34 @@
+{
+    admin 0.0.0.0:2019
+    metrics
+}
+
+alignai.com, www.alignai.com {
+    tls /certs/alignai.crt /certs/alignai.key
+    reverse_proxy {
+        dynamic a ui 3000
+        lb_policy round_robin
+    }
+}
+
+api.alignai.com {
+    tls /certs/alignai.crt /certs/alignai.key
+    reverse_proxy {
+        dynamic a api 8000
+        lb_policy round_robin
+    }
+}
+
+http://alignai.com, http://www.alignai.com {
+    reverse_proxy {
+        dynamic a ui 3000
+        lb_policy round_robin
+    }
+}
+
+http://api.alignai.com {
+    reverse_proxy {
+        dynamic a api 8000
+        lb_policy round_robin
+    }
+}

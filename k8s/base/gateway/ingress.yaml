@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gateway-ingress
+  namespace: align
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/whitelist-source-range: "85.230.96.242/32"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://alignai.com, https://www.alignai.com"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: api.alignai.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: gateway
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - api.alignai.com
+    secretName: gateway-tls

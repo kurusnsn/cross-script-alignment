@@ -1,0 +1,172 @@
+/* Vanish Input Component Styles */
+
+.vanish-input {
+  @apply relative w-full;
+}
+
+.vanish-input-container {
+  @apply relative bg-white/10 backdrop-blur-sm rounded-2xl border transition-all duration-300;
+}
+
+.vanish-input-container.focused {
+  @apply border-blue-400/50 shadow-lg shadow-blue-500/20;
+}
+
+.vanish-input-container:not(.focused) {
+  @apply border-white/20;
+}
+
+.vanish-input-textarea {
+  @apply w-full bg-transparent text-white text-lg leading-relaxed p-4 resize-none focus:outline-none placeholder-transparent transition-all duration-200;
+  min-height: 80px;
+  max-height: 200px;
+}
+
+.vanish-input-textarea:not(:placeholder-shown) {
+  min-height: 120px;
+}
+
+.vanish-placeholder {
+  @apply absolute inset-0 flex items-start justify-start p-4 pointer-events-none text-white/50 text-lg leading-relaxed;
+  z-index: 10;
+}
+
+/* RTL Support */
+.vanish-input-textarea[dir="rtl"] {
+  text-align: right;
+}
+
+.vanish-input-textarea[dir="ltr"] {
+  text-align: left;
+}
+
+/* Custom Scrollbar */
+.vanish-input-textarea::-webkit-scrollbar {
+  width: 4px;
+}
+
+.vanish-input-textarea::-webkit-scrollbar-track {
+  @apply bg-white/10 rounded-full;
+}
+
+.vanish-input-textarea::-webkit-scrollbar-thumb {
+  @apply bg-white/30 rounded-full;
+}
+
+.vanish-input-textarea::-webkit-scrollbar-thumb:hover {
+  @apply bg-white/50;
+}
+
+/* Animation classes */
+.placeholder-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.placeholder-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.placeholder-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.placeholder-exit-active {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+/* Language selector styles */
+.language-selector {
+  @apply bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-400/50 transition-all duration-200;
+}
+
+.language-selector option {
+  @apply bg-gray-900 text-white;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  @apply w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin;
+}
+
+/* Results grid */
+.results-grid {
+  @apply grid gap-6;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.result-card {
+  @apply bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 transition-all duration-200 hover:bg-white/15;
+}
+
+.result-header {
+  @apply text-lg font-semibold text-white mb-3 flex items-center;
+}
+
+.result-indicator {
+  @apply w-2 h-2 rounded-full mr-2;
+}
+
+.result-text {
+  @apply text-white/90 text-lg leading-relaxed;
+}
+
+/* Character counter */
+.character-counter {
+  @apply px-4 pb-2 text-right text-xs text-white/40;
+}
+
+/* Quick actions */
+.quick-actions {
+  @apply flex items-center justify-between text-sm;
+}
+
+.quick-action-button {
+  @apply text-white/60 hover:text-white transition-colors cursor-pointer;
+}
+
+/* Error styles */
+.error-container {
+  @apply p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-200;
+}
+
+/* Features grid */
+.features-grid {
+  @apply grid gap-6 md:grid-cols-3;
+}
+
+.feature-card {
+  @apply text-center;
+}
+
+.feature-icon {
+  @apply w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4 text-2xl;
+}
+
+.feature-title {
+  @apply text-lg font-semibold text-white mb-2;
+}
+
+.feature-description {
+  @apply text-white/60 text-sm;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .vanish-input-textarea {
+    @apply text-base p-3;
+  }
+
+  .vanish-placeholder {
+    @apply text-base p-3;
+  }
+
+  .results-grid {
+    grid-template-columns: 1fr;
+  }
+}

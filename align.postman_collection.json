@@ -1,0 +1,221 @@
+{
+  "info": {
+    "name": "Translit API",
+    "description": "Collection for testing the /align endpoint on the local FastAPI server.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "patch": 0
+    }
+  },
+  "item": [
+    {
+      "name": "Japanese → English",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"こんにちは世界\",\n  \"source_lang\": \"ja\",\n  \"target_lang\": \"en\",\n  \"persist\": false\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/align",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "align"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Sample",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"こんにちは世界\",\n  \"source_lang\": \"ja\",\n  \"target_lang\": \"en\",\n  \"persist\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8000/align",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "align"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"original\": \"string\",\n  \"aligneration\": \"string\",\n  \"translation\": \"string\",\n  \"ipa\": \"string\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Arabic → English",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"مرحبا بالعالم\",\n  \"source_lang\": \"ar\",\n  \"target_lang\": \"en\",\n  \"persist\": false\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/align",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "align"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Sample",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"مرحبا بالعالم\",\n  \"source_lang\": \"ar\",\n  \"target_lang\": \"en\",\n  \"persist\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8000/align",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "align"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"original\": \"string\",\n  \"aligneration\": \"string\",\n  \"translation\": \"string\",\n  \"ipa\": \"string\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Russian → English",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"Привет мир\",\n  \"source_lang\": \"ru\",\n  \"target_lang\": \"en\",\n  \"persist\": false\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/align",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "align"
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "Sample",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Привет мир\",\n  \"source_lang\": \"ru\",\n  \"target_lang\": \"en\",\n  \"persist\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8000/align",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "align"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "body": "{\n  \"original\": \"string\",\n  \"aligneration\": \"string\",\n  \"translation\": \"string\",\n  \"ipa\": \"string\"\n}"
+        }
+      ]
+    }
+  ]
+}

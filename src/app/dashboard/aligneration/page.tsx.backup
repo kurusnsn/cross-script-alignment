@@ -1,0 +1,832 @@
+"use client"
+
+import { useMemo, useState, useEffect } from "react"
+import { Copy, ArrowRightLeft, History, Loader2, Star, Eye, Languages, Moon, Sun, SlidersHorizontal, Type, Sparkles } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Badge } from "@/components/ui/badge"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import AlignmentViewer from "@/components/AlignmentViewer"
+import { VanishInput } from "@/components/VanishInput"
+import PlayTTS from "@/components/PlayTTS"
+import FileUploadZone from "@/components/FileUploadZone"
+import { useHistory } from "@/contexts/HistoryContext"
+import ExportButton from "@/components/ExportButton"
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
+
+const LANGUAGE_OPTIONS = [
+  { label: " Auto detect", value: "auto" },
+  { label: "🇮🇷 Persian (فارسی)", value: "fa" },
+  { label: "🇸🇦 Arabic (العربية)", value: "ar" },
+  { label: "🇵🇰 Urdu (اردو)", value: "ur" },
+  { label: "🇮🇳 Hindi (हिन्दी)", value: "hi" },
+  { label: "🇷🇺 Russian (Русский)", value: "ru" },
+  { label: "🇯🇵 Japanese (日本語)", value: "ja" },
+  { label: "🇰🇷 Korean (한국어)", value: "ko" },
+  { label: "🇨🇳 Chinese (中文)", value: "zh" },
+  { label: "🇹🇭 Thai (ไทย)", value: "th" },
+  { label: "🇮🇱 Hebrew (עברית)", value: "he" },
+  { label: "🇧🇩 Bengali (বাংলা)", value: "bn" },
+  { label: "🇪🇸 Spanish (Español)", value: "es" },
+  { label: "🇫🇷 French (Français)", value: "fr" },
+  { label: "🇺🇸 English", value: "en" },
+]
+
+const VANISH_PLACEHOLDERS = [
+  "سلام دنیا - Hello World in Persian",
+  "مرحبا بالعالم - Hello World in Arabic",
+  "ہیلو ورلڈ - Hello World in Urdu",
+  "नमस्ते दुनिया - Hello World in Hindi",
+  "Привет мир - Hello World in Russian",
+  "こんにちは世界 - Hello World in Japanese",
+  "안녕하세요 세계 - Hello World in Korean",
+  "你好世界 - Hello World in Chinese",
+  "สวัสดีโลก - Hello World in Thai",
+  "שלום עולם - Hello World in Hebrew",
+  "হ্যালো বিশ্ব - Hello World in Bengali",
+  "Try typing in any language...",
+  "Enter text to see aligneration magic ",
+]
+
+const TARGET_LANGUAGE_OPTIONS = [
+  { label: "🇺🇸 English", value: "en" },
+  { label: "🇪🇸 Spanish (Español)", value: "es" },
+  { label: "🇫🇷 French (Français)", value: "fr" },
+  { label: "🇩🇪 German (Deutsch)", value: "de" },
+  { label: "🇮🇹 Italian (Italiano)", value: "it" },
+  { label: "🇧🇷 Portuguese (Português)", value: "pt" },
+  { label: "🇷🇺 Russian (Русский)", value: "ru" },
+  { label: "🇸🇦 Arabic (العربية)", value: "ar" },
+  { label: "🇯🇵 Japanese (日本語)", value: "ja" },
+]
+
+const DEFAULT_TARGET_LANG = "en"
+
+type TranslitResponse = {
+  original: string
+  aligneration: string
+  translation: string
+  ipa: string
+  original_tokens?: string[]
+  align_tokens?: string[]
+  translation_tokens?: string[]
+}
+
+type WordMapping = {
+  originalIndex: number
+  alignIndex: number
+  translationIndex: number[]
+}
+
+type AlignmentResponse = {
+  alignments: WordMapping[]
+}
+
+type PhraseAlignment = {
+  source: string
+  target: string
+  sourceSpan: { start: number; end: number }
+  targetSpan: { start: number; end: number }
+  confidence?: number
+  refined?: boolean
+}
+
+type WordAlignment = {
+  source: string
+  target: string
+  confidence?: number
+  refined?: boolean
+}
+
+type LLMAlignmentResponse = {
+  original: string
+  translation: string
+  alignments: PhraseAlignment[]
+  phrase_alignments?: PhraseAlignment[]
+  word_alignments?: WordAlignment[]
+  timing: {
+    llm_processing: number
+    total: number
+  }
+  raw_response?: string
+}
+
+type ResultItem = {
+  id: string
+  request: {
+    text: string
+    sourceLang: string
+    targetLang: string
+  }
+  response: TranslitResponse
+  alignment?: WordMapping[]
+  phraseAlignments?: PhraseAlignment[]
+  wordAlignments?: WordAlignment[]
+  createdAt: Date
+  folderId?: string
+}
+
+export default function TransliterationPage() {
+  const { addHistoryItem, getSelectedItem, selectedHistoryId } = useHistory()
+  const [inputText, setInputText] = useState("")
+  const [sourceLanguage, setSourceLanguage] = useState("auto")
+  const [targetLanguage, setTargetLanguage] = useState(DEFAULT_TARGET_LANG)
+  const [results, setResults] = useState<ResultItem[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  
+  // Claude-inspired theme controls
+  const [isDarkMode, setIsDarkMode] = useState(true)
+  const [fontPreference, setFontPreference] = useState<'serif' | 'sans'>('sans')
+  const [letterSpacing, setLetterSpacing] = useState(-0.012)
+  
+  // Theme configuration
+  const theme = {
+    light: {
+      bg: '#FAF9F5',
+      text: '#0E0E0D',
+      accent: '#2DD4BF',
+      border: '#e8e8e6',
+      userMsg: '#f0f0ee',
+      card: '#ffffff',
+      codeBg: '#f5f5f4',
+      headerBg: '#ffffff'
+    },
+    dark: {
+      bg: '#262624',
+      text: '#FAF9F5',
+      accent: '#2DD4BF',
+      border: '#404040',
+      userMsg: '#2D2D2D',
+      card: '#2D2D2D',
+      codeBg: '#0D0D0D',
+      headerBg: '#1C1C1C'
+    }
+  }
+  
+  const currentTheme = isDarkMode ? theme.dark : theme.light
+  
+  const fontStacks = {
+    serif: {
+      family: '"Georgia", "Iowan Old Style", "Times New Roman", serif',
+      weight: '400',
+      lineHeight: '1.6',
+      size: '17px',
+      label: 'Serif'
+    },
+    sans: {
+      family: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+      weight: '400',
+      lineHeight: '1.6',
+      size: '17px',
+      label: 'Sans'
+    },
+    mono: '"JetBrains Mono", "Fira Code", "Consolas", monospace',
+    branding: '"Inter", -apple-system, sans-serif'
+  }
+
+  const recentHistory = useMemo(() => results.slice(0, 5), [results])
+  const mostRecent = useMemo(() => results.at(0), [results])
+  const selectedItem = getSelectedItem()
+
+  // When a history item is selected, add it to results for display
+  useEffect(() => {
+    if (selectedItem && !results.find(r => r.id === selectedItem.id)) {
+      const resultItem: ResultItem = {
+        id: selectedItem.id,
+        request: selectedItem.request || {
+          text: selectedItem.original,
+          sourceLang: "auto",
+          targetLang: "en",
+        },
+        response: selectedItem.response || {
+          original: selectedItem.original,
+          aligneration: selectedItem.aligneration,
+          translation: selectedItem.translation || "",
+          ipa: "",
+        },
+        alignment: selectedItem.alignment,
+        phraseAlignments: selectedItem.phraseAlignments,
+        wordAlignments: selectedItem.wordAlignments,
+        createdAt: selectedItem.timestamp,
+        folderId: selectedItem.folderId,
+      }
+      setResults([resultItem, ...results])
+    }
+  }, [selectedItem])
+
+  const fetchAlignment = async (originalTokens: string[], alignTokens: string[], translationTokens: string[]) => {
+    const startTime = performance.now()
+    const timestamp = new Date().toISOString().split('T')[1].slice(0, -1)
+    console.log(` [${timestamp}] [ALIGNMENT] Starting alignment request...`)
+
+    try {
+      const response = await fetch(`${API_BASE}/align/align`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          original_tokens: originalTokens,
+          align_tokens: alignTokens,
+          translation_tokens: translationTokens,
+          k: 3
+        }),
+      })
+
+      const fetchTime = performance.now()
+      console.log(` [ALIGNMENT] Fetch completed in ${(fetchTime - startTime).toFixed(2)}ms`)
+
+      if (!response.ok) {
+        throw new Error(`Alignment request failed: ${response.status}`)
+      }
+
+      const data: AlignmentResponse = await response.json()
+      const totalTime = performance.now()
+      console.log(` [ALIGNMENT] Total time: ${(totalTime - startTime).toFixed(2)}ms, alignments: ${data.alignments?.length || 0}`)
+
+      return data.alignments
+    } catch (err) {
+      const errorTime = performance.now()
+      console.error(` [ALIGNMENT] Failed after ${(errorTime - startTime).toFixed(2)}ms:`, err)
+      return []
+    }
+  }
+
+  const fetchLLMAlignments = async (originalText: string, translationText: string): Promise<{phrases: PhraseAlignment[], words: WordAlignment[]}> => {
+    const startTime = performance.now()
+    const timestamp = new Date().toISOString().split('T')[1].slice(0, -1)
+    console.log(` [${timestamp}] [LLM_ALIGNMENT] Starting LLM-only dual alignment request...`)
+
+    try {
+      const response = await fetch(`${API_BASE}/align/llm-phrase-align`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          source_text: originalText,
+          target_text: translationText,
+        }),
+      })
+
+      const fetchTime = performance.now()
+      console.log(` [LLM_ALIGNMENT] Fetch completed in ${(fetchTime - startTime).toFixed(2)}ms`)
+
+      if (!response.ok) {
+        console.warn(` [LLM_ALIGNMENT] Request failed: ${response.status}`)
+        return { phrases: [], words: [] }
+      }
+
+      const data: LLMAlignmentResponse = await response.json()
+
+      // Convert phrase alignments from backend format to frontend format
+      const phraseAlignments = data.alignments?.map((alignment: any) => ({
+        source: alignment.source,
+        target: alignment.target,
+        sourceSpan: { start: 0, end: 0 }, // Will be calculated by AlignmentViewer
+        targetSpan: { start: 0, end: 0 }, // Will be calculated by AlignmentViewer
+        confidence: alignment.confidence || 0.9,
+        refined: alignment.refined || false
+      })) || []
+
+      // Convert word alignments from backend format
+      const wordAlignments = data.word_alignments?.map((alignment: any) => ({
+        source: alignment.source,
+        target: alignment.target,
+        confidence: alignment.confidence || 0.8,
+        refined: alignment.refined || false
+      })) || []
+
+      const totalTime = performance.now()
+      console.log(` [LLM_ALIGNMENT] Dual alignment completed in ${(totalTime - startTime).toFixed(2)}ms, phrases: ${phraseAlignments.length}, words: ${wordAlignments.length}`)
+
+      return { phrases: phraseAlignments, words: wordAlignments }
+    } catch (err) {
+      const errorTime = performance.now()
+      console.warn(` [LLM_ALIGNMENT] Failed after ${(errorTime - startTime).toFixed(2)}ms:`, err)
+      return { phrases: [], words: [] }
+    }
+  }
+
+  const handleVanishInputSubmit = (text: string) => {
+    setInputText(text);
+    handleTransliterate(text);
+  };
+
+  const handleFileUploadSuccess = async (uploadResult: any) => {
+    console.log('📁 File upload completed:', uploadResult);
+
+    // Create a result item from the upload response
+    const result: ResultItem = {
+      id: `result-${Date.now()}`,
+      request: {
+        text: uploadResult.extracted_text,
+        sourceLang: uploadResult.source_language,
+        targetLang: uploadResult.target_language,
+      },
+      response: {
+        original: uploadResult.original,
+        aligneration: uploadResult.aligneration,
+        translation: uploadResult.translation,
+        ipa: uploadResult.ipa,
+        original_tokens: uploadResult.original.split(/\s+/).filter((t: string) => t.length > 0),
+        align_tokens: uploadResult.aligneration.split(/\s+/).filter((t: string) => t.length > 0),
+        translation_tokens: uploadResult.translation.split(/\s+/).filter((t: string) => t.length > 0),
+      },
+      createdAt: new Date(),
+    };
+
+    // Optionally fetch alignments for the uploaded file result
+    const originalTokens = result.response.original_tokens || [];
+    const alignTokens = result.response.align_tokens || [];
+    const translationTokens = result.response.translation_tokens || [];
+
+    // Fetch alignment data
+    const alignment = await fetchAlignment(originalTokens, alignTokens, translationTokens);
+
+    // Fetch LLM dual alignments
+    const llmAlignments = await fetchLLMAlignments(result.response.original, result.response.translation);
+
+    result.alignment = alignment;
+    result.phraseAlignments = llmAlignments.phrases;
+    result.wordAlignments = llmAlignments.words;
+
+    // Add to results with a special badge for file uploads
+    setResults((prev) => [result, ...prev].slice(0, 10));
+
+    // Add to history context
+    addHistoryItem({
+      id: result.id,
+      original: uploadResult.original,
+      aligneration: uploadResult.aligneration,
+      translation: uploadResult.translation,
+      timestamp: result.createdAt,
+      response: result.response,
+      request: result.request,
+      alignment,
+      phraseAlignments: llmAlignments.phrases,
+      wordAlignments: llmAlignments.words,
+    });
+  };
+
+  const handleTransliterate = async (textToTranslate?: string) => {
+    const text = textToTranslate || inputText;
+    if (!text.trim()) return
+
+    const overallStartTime = performance.now()
+    const startTimestamp = new Date().toISOString().split('T')[1].slice(0, -1)
+    console.log(` [${startTimestamp}] [TRANSLITERATE] Starting aligneration for:`, text.slice(0, 50) + (text.length > 50 ? '...' : ''))
+
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const payload = {
+        text: text,
+        source_lang: sourceLanguage === "auto" ? "" : sourceLanguage,
+        target_lang: targetLanguage,
+        persist: false,
+      }
+
+      const alignStartTime = performance.now()
+      const requestTimestamp = new Date().toISOString().split('T')[1].slice(0, -1)
+      console.log(` [${requestTimestamp}] [TRANSLITERATE] Starting main aligneration request...`)
+
+      const response = await fetch(`${API_BASE}/align`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
+
+      const alignFetchTime = performance.now()
+      const fetchTimestamp = new Date().toISOString().split('T')[1].slice(0, -1)
+      console.log(` [${fetchTimestamp}] [TRANSLITERATE] Fetch completed in ${(alignFetchTime - alignStartTime).toFixed(2)}ms`)
+
+      if (!response.ok) {
+        const message = await response.text()
+        throw new Error(message || `Request failed: ${response.status}`)
+      }
+
+      const data: TranslitResponse = await response.json()
+      const alignCompleteTime = performance.now()
+      console.log(` [TRANSLITERATE] Total aligneration time: ${(alignCompleteTime - alignStartTime).toFixed(2)}ms`)
+
+      // Use backend tokens if available, otherwise simple tokenization (same as SimAlign)
+      const originalTokens = data.original_tokens || data.original.split(/\s+/).filter(t => t.length > 0)
+      const alignTokens = data.align_tokens || data.aligneration.split(/\s+/).filter(t => t.length > 0)
+      const translationTokens = data.translation_tokens || data.translation.split(/\s+/).filter(t => t.length > 0)
+
+      console.log(' [TOKENIZE] Tokens:', {
+        original: originalTokens.length,
+        align: alignTokens.length,
+        translation: translationTokens.length
+      })
+
+      // Fetch alignment data
+      const alignment = await fetchAlignment(originalTokens, alignTokens, translationTokens)
+
+      // Fetch LLM dual alignments (phrase + word)
+      const llmAlignments = await fetchLLMAlignments(data.original, data.translation)
+
+      const result: ResultItem = {
+        id: `result-${Date.now()}`,
+        request: {
+          text: text,
+          sourceLang: sourceLanguage === "auto" ? "auto" : sourceLanguage,
+          targetLang: targetLanguage,
+        },
+        response: data,
+        alignment,
+        phraseAlignments: llmAlignments.phrases,
+        wordAlignments: llmAlignments.words,
+        createdAt: new Date(),
+      }
+
+      setResults((prev) => [result, ...prev].slice(0, 10))
+
+      // Add to history context
+      addHistoryItem({
+        id: result.id,
+        original: data.original,
+        aligneration: data.aligneration,
+        translation: data.translation,
+        timestamp: result.createdAt,
+        response: data,
+        request: result.request,
+        alignment,
+        phraseAlignments: llmAlignments.phrases,
+        wordAlignments: llmAlignments.words,
+      })
+
+      setInputText("")
+
+      const overallEndTime = performance.now()
+      console.log(` [TRANSLITERATE] Total process completed in ${(overallEndTime - overallStartTime).toFixed(2)}ms`)
+
+    } catch (err) {
+      const errorTime = performance.now()
+      console.error(` [TRANSLITERATE] Failed after ${(errorTime - overallStartTime).toFixed(2)}ms:`, err)
+      setError(err instanceof Error ? err.message : "Something went wrong")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <div className="flex flex-col min-h-screen overflow-hidden transition-colors duration-300" 
+         style={{ 
+           backgroundColor: currentTheme.bg, 
+           color: currentTheme.text,
+           WebkitFontSmoothing: 'antialiased',
+           MozOsxFontSmoothing: 'grayscale',
+           textRendering: 'optimizeLegibility'
+         }}>
+      
+      {/* Claude-inspired Header */}
+      <header className="flex items-center justify-between px-6 py-3 border-b transition-colors duration-300 z-10" 
+              style={{ 
+                borderColor: currentTheme.border, 
+                backgroundColor: currentTheme.headerBg
+              }}>
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center text-white" 
+               style={{ backgroundColor: currentTheme.accent }}>
+            <Sparkles size={18} fill="currentColor" />
+          </div>
+          <h1 className="text-xl font-semibold tracking-tight" 
+              style={{ 
+                fontFamily: fontStacks.branding,
+                letterSpacing: '-0.015em'
+              }}>
+            Transliteration Tool
+          </h1>
+        </div>
+        
+        <div className="flex items-center gap-6">
+          {/* Letter Spacing Slider */}
+          <div className="flex items-center gap-3 px-3 py-1.5 rounded-lg border" 
+               style={{ 
+                 borderColor: currentTheme.border,
+                 backgroundColor: currentTheme.codeBg
+               }}>
+            <SlidersHorizontal size={14} style={{ opacity: 0.5 }} />
+            <span className="text-[10px] font-semibold uppercase tracking-wider w-12" 
+                  style={{ opacity: 0.5 }}>
+              Spacing
+            </span>
+            <input 
+              type="range" 
+              min="-0.020" 
+              max="0.005" 
+              step="0.001" 
+              value={letterSpacing} 
+              onChange={(e) => setLetterSpacing(parseFloat(e.target.value))}
+              className="w-24 cursor-pointer"
+              style={{ accentColor: currentTheme.accent }}
+            />
+            <span className="text-[11px] font-mono w-10 text-right" style={{ opacity: 0.7 }}>
+              {letterSpacing.toFixed(3)}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              className="p-2 rounded-xl border hover:opacity-80 transition-all"
+              style={{ 
+                borderColor: currentTheme.border,
+                backgroundColor: currentTheme.card
+              }}
+            >
+              {isDarkMode ? <Sun size={18} className="text-yellow-400" /> : <Moon size={18} className="text-gray-500" />}
+            </button>
+            <button 
+              onClick={() => setFontPreference(fontPreference === 'serif' ? 'sans' : 'serif')}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium border rounded-xl hover:opacity-80 transition-all"
+              style={{ 
+                borderColor: currentTheme.border,
+                backgroundColor: currentTheme.card
+              }}
+            >
+              <Type size={16} />
+              <span style={{ fontFamily: fontStacks.sans.family }}>
+                {fontPreference === 'serif' ? 'Sans' : 'Serif'}
+              </span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content Area */}
+      <main className="flex-1 overflow-y-auto pt-8 pb-32 px-4 md:px-0">
+        <div className="max-w-3xl mx-auto space-y-8">
+
+          {/* Language Selection Bar */}
+          <div className="flex items-center justify-center space-x-4" 
+               style={{ 
+                 fontFamily: fontStacks[fontPreference].family,
+                 letterSpacing: `${letterSpacing}em`
+               }}>
+          <div className="space-y-2">
+            <Label htmlFor="from-language" className="text-sm font-medium text-muted-foreground">From</Label>
+            <Select value={sourceLanguage} onValueChange={setSourceLanguage}>
+              <SelectTrigger className="w-64 h-12 text-base">
+                <SelectValue placeholder="Select source language" />
+              </SelectTrigger>
+              <SelectContent>
+                {LANGUAGE_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex items-center mt-6">
+            <ArrowRightLeft className="h-5 w-5 text-muted-foreground" />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="to-language" className="text-sm font-medium text-muted-foreground">To</Label>
+            <Select value={targetLanguage} onValueChange={setTargetLanguage}>
+              <SelectTrigger className="w-64 h-12 text-base">
+                <SelectValue placeholder="Select target language" />
+              </SelectTrigger>
+              <SelectContent>
+                {TARGET_LANGUAGE_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Vanish Input */}
+          <div className="relative">
+          <VanishInput
+            placeholders={VANISH_PLACEHOLDERS}
+            onChange={setInputText}
+            onSubmit={handleVanishInputSubmit}
+            value={inputText}
+            className="w-full"
+          />
+          </div>
+
+          {/* File Upload Zone */}
+          <FileUploadZone
+          sourceLang={sourceLanguage === "auto" ? "" : sourceLanguage}
+          targetLang={targetLanguage}
+          onSuccess={handleFileUploadSuccess}
+          />
+
+          {/* Quick Actions & Status */}
+          <div className="flex items-center justify-between">
+          <div className="flex space-x-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setInputText('')}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              Clear
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                const examples = ['سلام چطوری؟', 'مرحبا كيف حالك؟', 'नमस्ते कैसे हैं आप?', 'こんにちは、元気ですか？'];
+                setInputText(examples[Math.floor(Math.random() * examples.length)]);
+              }}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              Try Example
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleTransliterate()}
+              disabled={!inputText.trim() || isLoading}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <ArrowRightLeft className="mr-2 h-4 w-4" />
+                  Transliterate
+                </>
+              )}
+            </Button>
+          </div>
+
+          <div className="text-xs text-muted-foreground">
+            {error ? (
+              <span className="text-destructive">{error}</span>
+            ) : mostRecent ? (
+              <span>Latest: {mostRecent.request.sourceLang === "auto" ? "auto" : mostRecent.request.sourceLang} → {mostRecent.request.targetLang}</span>
+            ) : (
+              <span>Enter text above to get started • Shift+Enter for new line</span>
+            )}
+          </div>
+
+          {/* Results Section - Direct Display */}
+          {results.length > 0 && (
+            <div className="space-y-6">
+              {results.map((item, index) => (
+                <div key={index} id={`result-${item.id}`} 
+                     className="rounded-xl overflow-hidden border transition-colors duration-300" 
+                     style={{ 
+                       backgroundColor: currentTheme.card, 
+                       borderColor: currentTheme.border 
+                     }}>
+                  <div className="space-y-6 p-6" 
+                       style={{ 
+                         fontFamily: fontStacks[fontPreference].family,
+                         fontSize: fontStacks[fontPreference].size,
+                         lineHeight: fontStacks[fontPreference].lineHeight,
+                         letterSpacing: `${letterSpacing}em`
+                       }}>
+                    {/* Header with actions */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <span className="px-2 py-1 rounded text-xs font-semibold" 
+                              style={{ 
+                                backgroundColor: currentTheme.codeBg,
+                                border: `1px solid ${currentTheme.border}`
+                              }}>
+                          {item.request.sourceLang === "auto" ? "Auto" : item.request.sourceLang}
+                        </span>
+                        <span className="px-2 py-1 rounded text-xs font-semibold" 
+                              style={{ 
+                                backgroundColor: currentTheme.accent,
+                                color: 'white'
+                              }}>
+                          → {item.request.targetLang}
+                        </span>
+                        <span className="text-xs" style={{ opacity: 0.5 }}>
+                          {item.createdAt.toLocaleTimeString()}
+                        </span>
+                      </div>
+                      <div className="flex space-x-2">
+                        <ExportButton
+                          data={{
+                            original: item.response.original,
+                            aligneration: item.response.aligneration,
+                            translation: item.response.translation,
+                            ipa: item.response.ipa,
+                            timestamp: item.createdAt,
+                          }}
+                          filename={`translation-${item.createdAt.toISOString().slice(0, 10)}`}
+                        />
+                        <button className="p-1 hover:opacity-70 transition-opacity">
+                          <Star className="h-4 w-4" style={{ opacity: 0.5 }} />
+                        </button>
+                        <button
+                          onClick={() => navigator.clipboard.writeText(item.response.aligneration)}
+                          aria-label="Copy aligneration"
+                          className="p-1 hover:opacity-70 transition-opacity"
+                        >
+                          <Copy className="h-4 w-4" style={{ opacity: 0.5 }} />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Text Results */}
+                    <div className="space-y-5">
+                      <section>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-[10px] uppercase font-semibold tracking-widest" style={{ opacity: 0.5 }}>Original</span>
+                          <PlayTTS
+                            text={item.response.original}
+                            lang={item.request.sourceLang === "auto" ? "fa" : item.request.sourceLang}
+                          />
+                        </div>
+                        <p className="text-xl font-medium">{item.response.original}</p>
+                      </section>
+                      <section>
+                        <div className="text-[10px] uppercase font-semibold tracking-widest mb-2" style={{ opacity: 0.5 }}>Transliteration</div>
+                        <p className="text-xl font-medium" style={{ color: currentTheme.accent }}>{item.response.aligneration}</p>
+                      </section>
+                      <section>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-[10px] uppercase font-semibold tracking-widest" style={{ opacity: 0.5 }}>Translation</span>
+                          <PlayTTS
+                            text={item.response.translation}
+                            lang={item.request.targetLang}
+                          />
+                        </div>
+                        <p className="text-lg font-medium">{item.response.translation}</p>
+                      </section>
+                    </div>
+
+                    {/* Alignment Viewer with Controls */}
+                    {((item.alignment && item.alignment.length > 0) || (item.phraseAlignments && item.phraseAlignments.length > 0) || (item.wordAlignments && item.wordAlignments.length > 0)) && (
+                      <div className="space-y-3">
+                        <div className="text-[10px] uppercase font-semibold tracking-widest" style={{ opacity: 0.5 }}>
+                          LLM Dual-Level Alignment
+                          {item.phraseAlignments && item.phraseAlignments.length > 0 && (
+                            <span className="ml-2 text-xs" style={{ color: currentTheme.accent }}>
+                              ({item.phraseAlignments.length} phrase{item.phraseAlignments.length !== 1 ? 's' : ''})
+                            </span>
+                          )}
+                          {item.wordAlignments && item.wordAlignments.length > 0 && (
+                            <span className="ml-2 text-xs" style={{ color: currentTheme.accent, opacity: 0.7 }}>
+                              ({item.wordAlignments.length} word{item.wordAlignments.length !== 1 ? 's' : ''})
+                            </span>
+                          )}
+                        </div>
+                        <AlignmentViewer
+                          original={item.response.original_tokens || item.response.original.split(/\s+/).filter(t => t.length > 0)}
+                          align={item.response.align_tokens || item.response.aligneration.split(/\s+/).filter(t => t.length > 0)}
+                          translation={item.response.translation_tokens || item.response.translation.split(/\s+/).filter(t => t.length > 0)}
+                          mappings={item.alignment || []}
+                          phraseAlignments={item.phraseAlignments || []}
+                          wordAlignments={item.wordAlignments || []}
+                          ipa={item.response.ipa}
+                          showDualLevel={true}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Empty State */}
+          {results.length === 0 && (
+            <div className="rounded-xl overflow-hidden border-2 border-dashed transition-colors duration-300" 
+                 style={{ 
+                   backgroundColor: currentTheme.card, 
+                   borderColor: currentTheme.border 
+                 }}>
+              <div className="py-16 text-center">
+                <Languages className="mx-auto h-16 w-16" style={{ opacity: 0.3 }} />
+                <p className="mt-6 text-xl" style={{ opacity: 0.7 }}>
+                  Enter text above to see aligneration results with word alignments
+                </p>
+                <p className="mt-2 text-sm" style={{ opacity: 0.5 }}>
+                  Try typing in Arabic, Japanese, Russian, or any other language
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </main>
+    </div>
+  )
+}

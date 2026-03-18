@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alignment-service
+  namespace: align
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alignment-service
+  template:
+    metadata:
+      labels:
+        app: alignment-service
+    spec:
+      imagePullSecrets:
+      - name: gitlab-registry
+      containers:
+      - name: alignment-service
+        image: registry.gitlab.com/kurusnsn/cross-script-alignment/nlp:latest  # Placeholder, will be updated by CI/CD
+        ports:
+        - containerPort: 8000
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 6
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "2Gi"
+          limits:
+            cpu: "2"
+            memory: "4Gi"
+        env:
+        - name: DEPLOYMENT_ENV
+          value: "production"
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://otel-collector.monitoring.svc.cluster.local:4317"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alignment-service
+  namespace: align
+spec:
+  sessionAffinity: None
+  ports:
+  - port: 80
+    targetPort: 8000
+  selector:
+    app: alignment-service

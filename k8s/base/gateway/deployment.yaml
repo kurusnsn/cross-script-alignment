@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  namespace: align
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      imagePullSecrets:
+      - name: gitlab-registry
+      containers:
+      - name: gateway
+        image: registry.gitlab.com/kurusnsn/cross-script-alignment/gateway:latest  # Placeholder
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+          limits:
+            cpu: "2"
+            memory: "2Gi"
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: align-secrets
+              key: DATABASE_URL
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: align-secrets
+              key: JWT_SECRET
+        - name: STRIPE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: align-secrets
+              key: STRIPE_API_KEY
+        - name: REDIS_URL
+          value: "redis://redis.align.svc.cluster.local:6379/0"
+        - name: TRANSLIT_SERVICE_URL
+          value: "http://alignment-service.align.svc.cluster.local"
+        - name: TTS_SERVICE_URL
+          value: "http://tts-service.align.svc.cluster.local"
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "http://otel-collector.monitoring.svc.cluster.local:4317"
+        - name: DEPLOYMENT_ENV
+          value: "production"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+  namespace: align
+spec:
+  ports:
+  - port: 80
+    targetPort: 8000
+  selector:
+    app: gateway

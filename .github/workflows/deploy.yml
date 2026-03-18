@@ -1,0 +1,91 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ main, staging, dev ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    strategy:
+      matrix:
+        include:
+          - image: alignai-gateway
+            context: ./backend
+            dockerfile: ./backend/Dockerfile
+          - image: alignai-ui
+            context: .
+            dockerfile: ./Dockerfile
+          - image: alignai-nlp
+            context: ./alignment-service
+            dockerfile: ./alignment-service/Dockerfile
+          - image: alignai-tts
+            context: ./backend/tts-service
+            dockerfile: ./backend/tts-service/Dockerfile
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: actions/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.image }}:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.image }}:latest
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.image }}:${{ github.ref_name }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  update-manifests:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Determine environment
+        id: env
+        run: |
+          if [[ "${{ github.ref_name }}" == "main" ]]; then
+            echo "overlay=prod" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref_name }}" == "staging" ]]; then
+            echo "overlay=staging" >> $GITHUB_OUTPUT
+          else
+            echo "overlay=dev" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update kustomization tags
+        run: |
+          overlay=${{ steps.env.outputs.overlay }}
+          cd k8s/overlays/$overlay
+          kustomize edit set image ghcr.io/kurusnsn/alignai-gateway=ghcr.io/${{ github.repository_owner }}/alignai-gateway:${{ github.sha }}
+          kustomize edit set image ghcr.io/kurusnsn/alignai-ui=ghcr.io/${{ github.repository_owner }}/alignai-ui:${{ github.sha }}
+          kustomize edit set image ghcr.io/kurusnsn/alignai-nlp=ghcr.io/${{ github.repository_owner }}/alignai-nlp:${{ github.sha }}
+          kustomize edit set image ghcr.io/kurusnsn/alignai-tts=ghcr.io/${{ github.repository_owner }}/alignai-tts:${{ github.sha }}
+
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update ${{ steps.env.outputs.overlay }} image tags to ${{ github.sha }}"
+          branch: ${{ github.ref_name }}

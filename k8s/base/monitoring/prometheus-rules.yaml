@@ -1,0 +1,204 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: alignai-alerts
+  namespace: monitoring
+  labels:
+    app: kube-prometheus-stack
+    release: prometheus
+spec:
+  groups:
+    - name: alignai.gateway
+      interval: 30s
+      rules:
+        - alert: HighErrorRate
+          expr: |
+            rate(http_errors_total[5m]) / rate(http_requests_total[5m]) > 0.05
+          for: 2m
+          labels:
+            severity: critical
+            service: gateway
+          annotations:
+            summary: "High error rate on gateway"
+            description: "Error rate is {{ $value | humanizePercentage }} over the last 5 minutes."
+
+        - alert: HighRequestLatency
+          expr: |
+            histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+          for: 5m
+          labels:
+            severity: warning
+            service: gateway
+          annotations:
+            summary: "High P95 latency on gateway"
+            description: "P95 latency is {{ $value | humanizeDuration }} — threshold is 2s."
+
+        - alert: ServiceDown
+          expr: |
+            up == 0
+          for: 1m
+          labels:
+            severity: critical
+            service: "{{ $labels.job }}"
+          annotations:
+            summary: "Service {{ $labels.job }} is down"
+            description: "Instance {{ $labels.instance }} has been unreachable for more than 1 minute."
+
+    - name: alignai.database
+      interval: 60s
+      rules:
+        - alert: DBPoolExhausted
+          expr: |
+            db_pool_usage_ratio > 0.9
+          for: 2m
+          labels:
+            severity: critical
+            service: api
+          annotations:
+            summary: "Database connection pool near exhaustion"
+            description: "DB pool usage is at {{ $value | humanizePercentage }}. Risk of connection refusals."
+
+        - alert: DBPoolHigh
+          expr: |
+            db_pool_usage_ratio > 0.7
+          for: 5m
+          labels:
+            severity: warning
+            service: api
+          annotations:
+            summary: "Database connection pool usage is high"
+            description: "DB pool usage is at {{ $value | humanizePercentage }}."
+
+    - name: alignai.workers
+      interval: 60s
+      rules:
+        - alert: WorkerUtilizationHigh
+          expr: |
+            worker_utilization_percent > 90
+          for: 5m
+          labels:
+            severity: warning
+            service: align-worker
+          annotations:
+            summary: "Translit worker utilization is high"
+            description: "Worker utilization is at {{ $value }}%. Consider scaling up."
+
+        - alert: WorkerUtilizationCritical
+          expr: |
+            worker_utilization_percent > 99
+          for: 2m
+          labels:
+            severity: critical
+            service: align-worker
+          annotations:
+            summary: "Translit worker is saturated"
+            description: "Worker utilization is at {{ $value }}% — jobs may be queuing or dropping."
+
+    - name: alignai.eventloop
+      interval: 30s
+      rules:
+        - alert: EventLoopLagHigh
+          expr: |
+            event_loop_lag_seconds > 0.1
+          for: 3m
+          labels:
+            severity: warning
+            service: api
+          annotations:
+            summary: "Python event loop lag is high"
+            description: "Event loop lag is {{ $value | humanizeDuration }}, indicating CPU blocking."
+
+        - alert: EventLoopLagCritical
+          expr: |
+            event_loop_lag_seconds > 0.5
+          for: 1m
+          labels:
+            severity: critical
+            service: api
+          annotations:
+            summary: "Python event loop is severely lagging"
+            description: "Event loop lag is {{ $value | humanizeDuration }}. API responsiveness is degraded."
+
+    - name: alignai.kubernetes
+      interval: 60s
+      rules:
+        - alert: PodCrashLooping
+          expr: |
+            rate(kube_pod_container_status_restarts_total[15m]) * 60 * 15 > 3
+          for: 5m
+          labels:
+            severity: critical
+            service: "{{ $labels.container }}"
+          annotations:
+            summary: "Pod {{ $labels.pod }} is crash-looping"
+            description: "Container {{ $labels.container }} in namespace {{ $labels.namespace }} has restarted more than 3 times in 15 minutes."
+
+        - alert: PodNotReady
+          expr: |
+            kube_pod_status_ready{condition="false"} == 1
+          for: 5m
+          labels:
+            severity: warning
+            service: "{{ $labels.pod }}"
+          annotations:
+            summary: "Pod {{ $labels.pod }} is not ready"
+            description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} has been in a non-ready state for more than 5 minutes."
+
+    - name: alignai.traces
+      interval: 30s
+      rules:
+        # spanmetrics connector emits these from OTEL traces → Prometheus
+        - alert: TraceErrorRateHigh
+          expr: |
+            sum(rate(traces_spanmetrics_calls_total{status_code="STATUS_CODE_ERROR"}[5m]))
+            /
+            sum(rate(traces_spanmetrics_calls_total[5m])) > 0.05
+          for: 2m
+          labels:
+            severity: critical
+            service: traces
+          annotations:
+            summary: "High trace error rate across services"
+            description: "More than 5% of spans are in ERROR state ({{ $value | humanizePercentage }}) — check Jaeger for details."
+
+        - alert: TraceLatencyP95High
+          expr: |
+            histogram_quantile(0.95,
+              sum(rate(traces_spanmetrics_duration_milliseconds_bucket[5m])) by (le, service_name)
+            ) > 2000
+          for: 5m
+          labels:
+            severity: warning
+            service: "{{ $labels.service_name }}"
+          annotations:
+            summary: "High P95 trace latency for {{ $labels.service_name }}"
+            description: "P95 span latency for {{ $labels.service_name }} is {{ $value }}ms — threshold is 2000ms."
+
+    - name: alignai.nginx
+      interval: 30s
+      rules:
+        - alert: NginxHigh5xxRate
+          expr: |
+            sum(rate(nginx_ingress_controller_requests{status=~"5.."}[5m]))
+            /
+            sum(rate(nginx_ingress_controller_requests[5m])) > 0.05
+          for: 2m
+          labels:
+            severity: critical
+            service: nginx-ingress
+          annotations:
+            summary: "nginx-ingress 5xx rate is high"
+            description: "More than 5% of ingress requests are returning 5xx ({{ $value | humanizePercentage }})."
+
+        - alert: NginxHigh4xxRate
+          expr: |
+            sum(rate(nginx_ingress_controller_requests{status=~"4.."}[5m]))
+            /
+            sum(rate(nginx_ingress_controller_requests[5m])) > 0.20
+          for: 5m
+          labels:
+            severity: warning
+            service: nginx-ingress
+          annotations:
+            summary: "nginx-ingress 4xx rate is elevated"
+            description: "More than 20% of ingress requests are returning 4xx ({{ $value | humanizePercentage }})."

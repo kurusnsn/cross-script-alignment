@@ -1,0 +1,21 @@
+# Patch this into your kube-prometheus-stack Helm values (e.g., prometheus-stack-values.yaml)
+# to point Prometheus at the Alertmanager deployed in k8s/base/monitoring/
+#
+# If using the Prometheus CRD directly, apply prometheus-alertmanager-config.yaml instead.
+
+alertmanager:
+  enabled: false  # We deploy our own Alertmanager in the monitoring/ directory
+
+prometheus:
+  prometheusSpec:
+    alerting:
+      alertmanagers:
+        - namespace: monitoring
+          name: alertmanager
+          port: web
+    additionalAlertManagerConfigs: []
+    ruleSelector:
+      matchLabels:
+        app: kube-prometheus-stack
+        release: prometheus
+    ruleSelectorNilUsesHelmValues: false

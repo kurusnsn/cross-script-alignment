@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loki-config-patch
+  namespace: monitoring
+data:
+  # Apply these settings to your Loki Helm values (loki-stack or loki-distributed).
+  # They enable the Ruler component so LogQL alert rules fire into Alertmanager → Slack.
+  #
+  # helm upgrade loki grafana/loki-stack -n monitoring -f loki-values-patch.yaml
+  loki-values-patch.yaml: |
+    loki:
+      ruler:
+        enabled: true
+        alertmanager_url: http://alertmanager.monitoring.svc.cluster.local:9093
+        ring:
+          kvstore:
+            store: inmemory
+        rule_path: /tmp/loki/rules
+        storage:
+          type: local
+          local:
+            directory: /etc/loki/rules
+        enable_api: true
+        enable_alertmanager_v2: true
+
+    # Mount the loki-ruler-rules ConfigMap into the Loki pod
+    # so the ruler picks up our LogQL rules from loki-ruler-rules.yaml
+    extraVolumes:
+      - name: ruler-rules
+        configMap:
+          name: loki-ruler-rules
+    extraVolumeMounts:
+      - name: ruler-rules
+        mountPath: /etc/loki/rules/fake
+        readOnly: true

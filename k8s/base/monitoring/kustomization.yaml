@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: monitoring
+
+resources:
+  - alertmanager-secret.yaml
+  - alertmanager-config.yaml
+  - alertmanager.yaml
+  - prometheus-rules.yaml
+  - grafana-admin-secret.yaml
+  - grafana-datasources.yaml
+  - grafana-provisioning.yaml
+  - grafana.yaml
+  - loki-ruler-rules.yaml
+  - loki-config-patch.yaml
