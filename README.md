@@ -10,13 +10,12 @@ A distributed NLP system for aligning text across different writing systems, ena
 
 The platform uses a multi-stage alignment pipeline:
 
-Client (Next.js UI)  
-↓  
-API Layer (FastAPI)  
-↓  
-Alignment Worker (Stanza + BERT + LaBSE)  
-↓  
-LLM Refinement
+```mermaid
+flowchart TD
+    A["Client (Next.js UI)"] --> B["API Layer (FastAPI)"]
+    B --> C["Alignment Worker (Stanza + BERT + LaBSE)"]
+    C --> D["LLM Refinement"]
+```
 
 ```mermaid
 flowchart TD
